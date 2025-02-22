@@ -1,0 +1,373 @@
+<html>
+<head>
+<title>ElectricityBillingSystem.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ElectricityBillingSystem.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">Electricity</span><span class="s2">.</span><span class="s1">Billing</span><span class="s2">.</span><span class="s1">System</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">ActionEvent</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">ActionListener</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">sql</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Random</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">ElectricityBillingSystem </span><span class="s2">{</span>
+
+    <span class="s3">// Database Connection class</span>
+    <span class="s0">static class </span><span class="s1">Conn </span><span class="s2">{</span>
+        <span class="s1">Connection c</span><span class="s2">;</span>
+        <span class="s1">Statement s</span><span class="s2">;</span>
+
+        <span class="s0">public </span><span class="s1">Conn</span><span class="s2">() {</span>
+            <span class="s0">try </span><span class="s2">{</span>
+                <span class="s3">// Setup the connection to the database</span>
+                <span class="s1">Class</span><span class="s2">.</span><span class="s1">forName</span><span class="s2">(</span><span class="s4">&quot;com.mysql.cj.jdbc.Driver&quot;</span><span class="s2">);</span>
+                <span class="s1">c </span><span class="s2">= </span><span class="s1">DriverManager</span><span class="s2">.</span><span class="s1">getConnection</span><span class="s2">(</span><span class="s4">&quot;jdbc:mysql://localhost:3306/electricity_billing_system&quot;</span><span class="s2">, </span><span class="s4">&quot;root&quot;</span><span class="s2">, </span><span class="s4">&quot;rootroot&quot;</span><span class="s2">);</span>
+                <span class="s1">s </span><span class="s2">= </span><span class="s1">c</span><span class="s2">.</span><span class="s1">createStatement</span><span class="s2">();</span>
+            <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">();</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Login Page Class</span>
+    <span class="s0">static class </span><span class="s1">Login </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s0">implements </span><span class="s1">ActionListener </span><span class="s2">{</span>
+        <span class="s1">JButton login</span><span class="s2">, </span><span class="s1">cancel</span><span class="s2">, </span><span class="s1">signup</span><span class="s2">;</span>
+        <span class="s1">JTextField username</span><span class="s2">, </span><span class="s1">password</span><span class="s2">;</span>
+        <span class="s1">Choice logginin</span><span class="s2">;</span>
+
+        <span class="s1">Login</span><span class="s2">() {</span>
+            <span class="s0">super</span><span class="s2">(</span><span class="s4">&quot;Login Page&quot;</span><span class="s2">);</span>
+            <span class="s1">getContentPane</span><span class="s2">().</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">);</span>
+            <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblusername </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Username&quot;</span><span class="s2">);</span>
+            <span class="s1">lblusername</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">300</span><span class="s2">, </span><span class="s5">20</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">lblusername</span><span class="s2">);</span>
+
+            <span class="s1">username </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">username</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">20</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">username</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblpassword </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Password&quot;</span><span class="s2">);</span>
+            <span class="s1">lblpassword</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">300</span><span class="s2">, </span><span class="s5">60</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">lblpassword</span><span class="s2">);</span>
+
+            <span class="s1">password </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">password</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">60</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">password</span><span class="s2">);</span>
+
+            <span class="s1">JLabel loggininas </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Loggin in as&quot;</span><span class="s2">);</span>
+            <span class="s1">loggininas</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">300</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">loggininas</span><span class="s2">);</span>
+
+            <span class="s1">logginin </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Choice</span><span class="s2">();</span>
+            <span class="s1">logginin</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s4">&quot;Admin&quot;</span><span class="s2">);</span>
+            <span class="s1">logginin</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s4">&quot;Customer&quot;</span><span class="s2">);</span>
+            <span class="s1">logginin</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">logginin</span><span class="s2">);</span>
+
+            <span class="s1">login </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Login&quot;</span><span class="s2">);</span>
+            <span class="s1">login</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">330</span><span class="s2">, </span><span class="s5">160</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">login</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">login</span><span class="s2">);</span>
+
+            <span class="s1">cancel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Cancel&quot;</span><span class="s2">);</span>
+            <span class="s1">cancel</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">450</span><span class="s2">, </span><span class="s5">160</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">cancel</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">cancel</span><span class="s2">);</span>
+
+            <span class="s1">signup </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Signup&quot;</span><span class="s2">);</span>
+            <span class="s1">signup</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">380</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">signup</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">signup</span><span class="s2">);</span>
+
+            <span class="s1">setSize</span><span class="s2">(</span><span class="s5">640</span><span class="s2">, </span><span class="s5">300</span><span class="s2">);</span>
+            <span class="s1">setLocation</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">200</span><span class="s2">);</span>
+            <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public void </span><span class="s1">actionPerformed</span><span class="s2">(</span><span class="s1">ActionEvent ae</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">ae</span><span class="s2">.</span><span class="s1">getSource</span><span class="s2">() == </span><span class="s1">login</span><span class="s2">) {</span>
+                <span class="s1">String susername </span><span class="s2">= </span><span class="s1">username</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String spassword </span><span class="s2">= </span><span class="s1">password</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String user </span><span class="s2">= </span><span class="s1">logginin</span><span class="s2">.</span><span class="s1">getSelectedItem</span><span class="s2">();</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">Conn c </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Conn</span><span class="s2">();</span>
+                    <span class="s1">String query </span><span class="s2">= </span><span class="s4">&quot;select * from login where username = '&quot;</span><span class="s2">+</span><span class="s1">susername</span><span class="s2">+</span><span class="s4">&quot;' and password = '&quot;</span><span class="s2">+</span><span class="s1">spassword</span><span class="s2">+</span><span class="s4">&quot;' and usr = '&quot;</span><span class="s2">+</span><span class="s1">user</span><span class="s2">+</span><span class="s4">&quot;'&quot;</span><span class="s2">;</span>
+                    <span class="s1">ResultSet rs </span><span class="s2">= </span><span class="s1">c</span><span class="s2">.</span><span class="s1">s</span><span class="s2">.</span><span class="s1">executeQuery</span><span class="s2">(</span><span class="s1">query</span><span class="s2">);</span>
+                    <span class="s0">if </span><span class="s2">(</span><span class="s1">rs</span><span class="s2">.</span><span class="s1">next</span><span class="s2">()) {</span>
+                        <span class="s1">String meter </span><span class="s2">= </span><span class="s1">rs</span><span class="s2">.</span><span class="s1">getString</span><span class="s2">(</span><span class="s4">&quot;meter_no&quot;</span><span class="s2">);</span>
+                        <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+                        <span class="s0">new </span><span class="s1">Project</span><span class="s2">(</span><span class="s1">user</span><span class="s2">, </span><span class="s1">meter</span><span class="s2">);</span>
+                    <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                        <span class="s1">JOptionPane</span><span class="s2">.</span><span class="s1">showMessageDialog</span><span class="s2">(</span><span class="s0">null</span><span class="s2">, </span><span class="s4">&quot;Invalid Login&quot;</span><span class="s2">);</span>
+                        <span class="s1">username</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;&quot;</span><span class="s2">);</span>
+                        <span class="s1">password</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;&quot;</span><span class="s2">);</span>
+                    <span class="s2">}</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">();</span>
+                <span class="s2">}</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">ae</span><span class="s2">.</span><span class="s1">getSource</span><span class="s2">() == </span><span class="s1">cancel</span><span class="s2">) {</span>
+                <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">ae</span><span class="s2">.</span><span class="s1">getSource</span><span class="s2">() == </span><span class="s1">signup</span><span class="s2">) {</span>
+                <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+                <span class="s0">new </span><span class="s1">NewCustomer</span><span class="s2">();</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) {</span>
+            <span class="s3">// Start the application by showing the login page</span>
+            <span class="s0">new </span><span class="s1">Login</span><span class="s2">();</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// New Customer Registration Class</span>
+    <span class="s0">static class </span><span class="s1">NewCustomer </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s0">implements </span><span class="s1">ActionListener </span><span class="s2">{</span>
+        <span class="s1">JTextField tfname</span><span class="s2">, </span><span class="s1">tfaddress</span><span class="s2">, </span><span class="s1">tfstate</span><span class="s2">, </span><span class="s1">tfcity</span><span class="s2">, </span><span class="s1">tfemail</span><span class="s2">, </span><span class="s1">tfphone</span><span class="s2">;</span>
+        <span class="s1">JButton next</span><span class="s2">, </span><span class="s1">cancel</span><span class="s2">;</span>
+        <span class="s1">JLabel lblmeter</span><span class="s2">;</span>
+
+        <span class="s1">NewCustomer</span><span class="s2">() {</span>
+            <span class="s1">setSize</span><span class="s2">(</span><span class="s5">700</span><span class="s2">, </span><span class="s5">500</span><span class="s2">);</span>
+            <span class="s1">setLocation</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">200</span><span class="s2">);</span>
+            <span class="s1">JPanel p </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JPanel</span><span class="s2">();</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">setLayout</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">173</span><span class="s2">, </span><span class="s5">216</span><span class="s2">, </span><span class="s5">230</span><span class="s2">));</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">p</span><span class="s2">);</span>
+
+            <span class="s1">JLabel heading </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;New Customer&quot;</span><span class="s2">);</span>
+            <span class="s1">heading</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">180</span><span class="s2">, </span><span class="s5">10</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">25</span><span class="s2">);</span>
+            <span class="s1">heading</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s4">&quot;Tahoma&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">PLAIN</span><span class="s2">, </span><span class="s5">24</span><span class="s2">));</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">heading</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblname </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Customer Name&quot;</span><span class="s2">);</span>
+            <span class="s1">lblname</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">80</span><span class="s2">, </span><span class="s5">110</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblname</span><span class="s2">);</span>
+
+            <span class="s1">tfname </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfname</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">80</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">tfname</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblmeterno </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Meter Number&quot;</span><span class="s2">);</span>
+            <span class="s1">lblmeterno</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">120</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblmeterno</span><span class="s2">);</span>
+
+            <span class="s1">lblmeter </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;&quot;</span><span class="s2">);</span>
+            <span class="s1">lblmeter</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">120</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblmeter</span><span class="s2">);</span>
+
+            <span class="s1">Random ran </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Random</span><span class="s2">();</span>
+            <span class="s0">long </span><span class="s1">number </span><span class="s2">= </span><span class="s1">ran</span><span class="s2">.</span><span class="s1">nextLong</span><span class="s2">() % </span><span class="s5">1000000</span><span class="s2">;</span>
+            <span class="s1">lblmeter</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;&quot; </span><span class="s2">+ </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">number</span><span class="s2">));</span>
+
+            <span class="s1">JLabel lbladdress </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Address&quot;</span><span class="s2">);</span>
+            <span class="s1">lbladdress</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">160</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lbladdress</span><span class="s2">);</span>
+
+            <span class="s1">tfaddress </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfaddress</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">160</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">tfaddress</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblcity </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;City&quot;</span><span class="s2">);</span>
+            <span class="s1">lblcity</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblcity</span><span class="s2">);</span>
+
+            <span class="s1">tfcity </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfcity</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">tfcity</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblstate </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;State&quot;</span><span class="s2">);</span>
+            <span class="s1">lblstate</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">240</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblstate</span><span class="s2">);</span>
+
+            <span class="s1">tfstate </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfstate</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">tfstate</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblemail </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Email&quot;</span><span class="s2">);</span>
+            <span class="s1">lblemail</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">280</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblemail</span><span class="s2">);</span>
+
+            <span class="s1">tfemail </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfemail</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">280</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">tfemail</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblphone </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Phone Number&quot;</span><span class="s2">);</span>
+            <span class="s1">lblphone</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">320</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">lblphone</span><span class="s2">);</span>
+
+            <span class="s1">tfphone </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfphone</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">320</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">tfphone</span><span class="s2">);</span>
+
+            <span class="s1">next </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Next&quot;</span><span class="s2">);</span>
+            <span class="s1">next</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">120</span><span class="s2">, </span><span class="s5">390</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">25</span><span class="s2">);</span>
+            <span class="s1">next</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">next</span><span class="s2">);</span>
+
+            <span class="s1">cancel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Cancel&quot;</span><span class="s2">);</span>
+            <span class="s1">cancel</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">250</span><span class="s2">, </span><span class="s5">390</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">25</span><span class="s2">);</span>
+            <span class="s1">cancel</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">p</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">cancel</span><span class="s2">);</span>
+
+            <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">new </span><span class="s1">BorderLayout</span><span class="s2">());</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">p</span><span class="s2">, </span><span class="s4">&quot;Center&quot;</span><span class="s2">);</span>
+
+            <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public void </span><span class="s1">actionPerformed</span><span class="s2">(</span><span class="s1">ActionEvent ae</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">ae</span><span class="s2">.</span><span class="s1">getSource</span><span class="s2">() == </span><span class="s1">next</span><span class="s2">) {</span>
+                <span class="s1">String name </span><span class="s2">= </span><span class="s1">tfname</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String meter </span><span class="s2">= </span><span class="s1">lblmeter</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String address </span><span class="s2">= </span><span class="s1">tfaddress</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String city </span><span class="s2">= </span><span class="s1">tfcity</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String state </span><span class="s2">= </span><span class="s1">tfstate</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String email </span><span class="s2">= </span><span class="s1">tfemail</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String phone </span><span class="s2">= </span><span class="s1">tfphone</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+
+                <span class="s1">String query1 </span><span class="s2">= </span><span class="s4">&quot;insert into customer values('&quot;</span><span class="s2">+</span><span class="s1">name</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">meter</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">address</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">city</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">state</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">email</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">phone</span><span class="s2">+</span><span class="s4">&quot;')&quot;</span><span class="s2">;</span>
+                <span class="s1">String query2 </span><span class="s2">= </span><span class="s4">&quot;insert into login values('&quot;</span><span class="s2">+</span><span class="s1">meter</span><span class="s2">+</span><span class="s4">&quot;', '', '&quot;</span><span class="s2">+</span><span class="s1">name</span><span class="s2">+</span><span class="s4">&quot;', '', '')&quot;</span><span class="s2">;</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">Conn c </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Conn</span><span class="s2">();</span>
+                    <span class="s1">c</span><span class="s2">.</span><span class="s1">s</span><span class="s2">.</span><span class="s1">executeUpdate</span><span class="s2">(</span><span class="s1">query1</span><span class="s2">);</span>
+                    <span class="s1">c</span><span class="s2">.</span><span class="s1">s</span><span class="s2">.</span><span class="s1">executeUpdate</span><span class="s2">(</span><span class="s1">query2</span><span class="s2">);</span>
+                    <span class="s1">JOptionPane</span><span class="s2">.</span><span class="s1">showMessageDialog</span><span class="s2">(</span><span class="s0">null</span><span class="s2">, </span><span class="s4">&quot;Customer Details Added Successfully&quot;</span><span class="s2">);</span>
+                    <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+                    <span class="s0">new </span><span class="s1">MeterInfo</span><span class="s2">(</span><span class="s1">meter</span><span class="s2">);</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">();</span>
+                <span class="s2">}</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// MeterInfo Class (display meter information to the customer)</span>
+    <span class="s0">static class </span><span class="s1">MeterInfo </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s2">{</span>
+        <span class="s1">MeterInfo</span><span class="s2">(</span><span class="s1">String meter</span><span class="s2">) {</span>
+            <span class="s1">setTitle</span><span class="s2">(</span><span class="s4">&quot;Meter Info&quot;</span><span class="s2">);</span>
+            <span class="s1">setSize</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">300</span><span class="s2">);</span>
+            <span class="s1">setLocation</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">200</span><span class="s2">);</span>
+
+            <span class="s1">JLabel label </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Meter Number: &quot; </span><span class="s2">+ </span><span class="s1">meter</span><span class="s2">);</span>
+            <span class="s1">label</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">50</span><span class="s2">, </span><span class="s5">50</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">label</span><span class="s2">);</span>
+
+            <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+            <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Project Class (Dashboard for Admin and Customer)</span>
+    <span class="s0">static class </span><span class="s1">Project </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s2">{</span>
+        <span class="s1">Project</span><span class="s2">(</span><span class="s1">String user</span><span class="s2">, </span><span class="s1">String meterNo</span><span class="s2">) {</span>
+            <span class="s1">setTitle</span><span class="s2">(</span><span class="s4">&quot;Welcome to &quot; </span><span class="s2">+ </span><span class="s1">user </span><span class="s2">+ </span><span class="s4">&quot; Dashboard&quot;</span><span class="s2">);</span>
+            <span class="s1">setSize</span><span class="s2">(</span><span class="s5">500</span><span class="s2">, </span><span class="s5">400</span><span class="s2">);</span>
+            <span class="s1">setLocation</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">200</span><span class="s2">);</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">user</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;Admin&quot;</span><span class="s2">)) {</span>
+                <span class="s3">// Admin dashboard buttons can be added here</span>
+                <span class="s1">JLabel label </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Welcome Admin&quot;</span><span class="s2">);</span>
+                <span class="s1">label</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">50</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+                <span class="s1">add</span><span class="s2">(</span><span class="s1">label</span><span class="s2">);</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s3">// Customer dashboard buttons</span>
+                <span class="s1">JButton payBillButton </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Pay Bill&quot;</span><span class="s2">);</span>
+                <span class="s1">payBillButton</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">200</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+                <span class="s1">payBillButton</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s1">e -&gt; </span><span class="s0">new </span><span class="s1">PayBill</span><span class="s2">(</span><span class="s1">meterNo</span><span class="s2">));</span>
+                <span class="s1">add</span><span class="s2">(</span><span class="s1">payBillButton</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+            <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// PayBill Class (for paying bills)</span>
+    <span class="s0">static class </span><span class="s1">PayBill </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s0">implements </span><span class="s1">ActionListener </span><span class="s2">{</span>
+        <span class="s1">JTextField tfUnits</span><span class="s2">, </span><span class="s1">tfAmount</span><span class="s2">;</span>
+        <span class="s1">JButton submit</span><span class="s2">, </span><span class="s1">cancel</span><span class="s2">;</span>
+
+        <span class="s1">PayBill</span><span class="s2">(</span><span class="s1">String meterNo</span><span class="s2">) {</span>
+            <span class="s1">setSize</span><span class="s2">(</span><span class="s5">500</span><span class="s2">, </span><span class="s5">400</span><span class="s2">);</span>
+            <span class="s1">setLocation</span><span class="s2">(</span><span class="s5">400</span><span class="s2">, </span><span class="s5">200</span><span class="s2">);</span>
+            <span class="s1">setTitle</span><span class="s2">(</span><span class="s4">&quot;Pay Bill&quot;</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblMeter </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Meter Number: &quot; </span><span class="s2">+ </span><span class="s1">meterNo</span><span class="s2">);</span>
+            <span class="s1">lblMeter</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">20</span><span class="s2">, </span><span class="s5">30</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">lblMeter</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblUnits </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Units Consumed: &quot;</span><span class="s2">);</span>
+            <span class="s1">lblUnits</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">20</span><span class="s2">, </span><span class="s5">70</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">lblUnits</span><span class="s2">);</span>
+
+            <span class="s1">tfUnits </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfUnits</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">180</span><span class="s2">, </span><span class="s5">70</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">tfUnits</span><span class="s2">);</span>
+
+            <span class="s1">JLabel lblAmount </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Amount: &quot;</span><span class="s2">);</span>
+            <span class="s1">lblAmount</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">20</span><span class="s2">, </span><span class="s5">110</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">lblAmount</span><span class="s2">);</span>
+
+            <span class="s1">tfAmount </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+            <span class="s1">tfAmount</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">180</span><span class="s2">, </span><span class="s5">110</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">tfAmount</span><span class="s2">);</span>
+
+            <span class="s1">submit </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Submit&quot;</span><span class="s2">);</span>
+            <span class="s1">submit</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+            <span class="s1">submit</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">submit</span><span class="s2">);</span>
+
+            <span class="s1">cancel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Cancel&quot;</span><span class="s2">);</span>
+            <span class="s1">cancel</span><span class="s2">.</span><span class="s1">setBounds</span><span class="s2">(</span><span class="s5">230</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+            <span class="s1">cancel</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+            <span class="s1">add</span><span class="s2">(</span><span class="s1">cancel</span><span class="s2">);</span>
+
+            <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+            <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public void </span><span class="s1">actionPerformed</span><span class="s2">(</span><span class="s1">ActionEvent ae</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">ae</span><span class="s2">.</span><span class="s1">getSource</span><span class="s2">() == </span><span class="s1">submit</span><span class="s2">) {</span>
+                <span class="s1">String units </span><span class="s2">= </span><span class="s1">tfUnits</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s1">String amount </span><span class="s2">= </span><span class="s1">tfAmount</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">();</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">Conn c </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Conn</span><span class="s2">();</span>
+                    <span class="s1">String query </span><span class="s2">= </span><span class="s4">&quot;insert into bill (meter_no, units, amount) values ('&quot;</span><span class="s2">+</span><span class="s1">units</span><span class="s2">+</span><span class="s4">&quot;', '&quot;</span><span class="s2">+</span><span class="s1">amount</span><span class="s2">+</span><span class="s4">&quot;')&quot;</span><span class="s2">;</span>
+                    <span class="s1">c</span><span class="s2">.</span><span class="s1">s</span><span class="s2">.</span><span class="s1">executeUpdate</span><span class="s2">(</span><span class="s1">query</span><span class="s2">);</span>
+                    <span class="s1">JOptionPane</span><span class="s2">.</span><span class="s1">showMessageDialog</span><span class="s2">(</span><span class="s0">null</span><span class="s2">, </span><span class="s4">&quot;Bill Paid Successfully!&quot;</span><span class="s2">);</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">();</span>
+                <span class="s2">}</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Main method to run the program</span>
+    <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) {</span>
+        <span class="s0">new </span><span class="s1">Login</span><span class="s2">(); </span><span class="s3">// This will initialize the login page</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

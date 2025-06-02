@@ -257,7 +257,7 @@ public class ElectricityBillingSystem {
         }
     }
 
-    // Project Class (Dashboard for Admin and Customer)
+    // project class (Dashboard for Admin and Customer)
     static class Project extends JFrame {
         Project(String user, String meterNo) {
             setTitle("Welcome to " + user + " Dashboard");

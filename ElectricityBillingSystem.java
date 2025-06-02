@@ -90,7 +90,7 @@ public class ElectricityBillingSystem {
                 String user = logginin.getSelectedItem();
                 try {
                     Conn c = new Conn();
-                    String query = "select * from login where username = '"+susername+"' and password = '"+spassword+"' and usr = '"+user+"'";
+                    String query = "Select * from login where username = '"+susername+"' and password = '"+spassword+"' and usr = '"+user+"'";
                     ResultSet rs = c.s.executeQuery(query);
                     if (rs.next()) {
                         String meter = rs.getString("meter_no");
@@ -113,7 +113,7 @@ public class ElectricityBillingSystem {
         }
 
         public static void main(String[] args) {
-            // Start the application by showing the login page
+            // start the application by showing the login page
             new Login();
         }
     }

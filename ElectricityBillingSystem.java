@@ -241,7 +241,7 @@ public class ElectricityBillingSystem {
         }
     }
 
-    // MeterInfo Class (display meter information to the customer)
+    // meterInfo Class (display meter information to the customer)
     static class MeterInfo extends JFrame {
         MeterInfo(String meter) {
             setTitle("Meter Info");

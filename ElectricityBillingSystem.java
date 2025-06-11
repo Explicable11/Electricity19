@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class ElectricityBillingSystem {
 
-    // Database Connection class
+    // Database Connection Class
     static class Conn {
         Connection c;
         Statement s;

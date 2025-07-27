@@ -16,7 +16,7 @@ public class ElectricityBillingSystem {
 
         public Conn() {
             try {
-                // setup the connection to the database
+                // Setup the connection to the database
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 c = DriverManager.getConnection("jdbc:mysql://localhost:3306/electricity_billing_system", "root", "rootroot");
                 s = c.createStatement();
